@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using ExceptionTracker.Apis.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -13,7 +15,22 @@ namespace ExceptionTracker.Apis.Controllers
     [ApiController]
     public class LogsController : ControllerBase
     {
+        private readonly MongoDBConfig _config;
         private readonly MongoClient _mongoClient;
+
+        public LogsController(IConfiguration configuration)
+        {
+            _config = configuration.GetSection("MongoBD").Get<MongoDBConfig>();
+            _mongoClient = new MongoClient(new MongoClientSettings()
+            {
+                Server = new MongoServerAddress(_config.HostName),
+                UseSsl = _config.UseSSL,
+                ConnectTimeout = TimeSpan.FromMilliseconds(_config.Timeout),
+                DefaultCredentials = MongoCredentials.Create(_config.UserName, _config.Password),
+                MaxConnectionPoolSize = _config.MaxPoolSize,
+                ReadPreference = new ReadPreference(ReadPreferenceMode.Primary)
+            });
+        }
 
         // GET api/logs
         [HttpGet]
