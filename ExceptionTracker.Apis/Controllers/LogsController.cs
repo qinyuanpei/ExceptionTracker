@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using ExceptionTracker.Apis.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -15,32 +14,27 @@ namespace ExceptionTracker.Apis.Controllers
     [ApiController]
     public class LogsController : ControllerBase
     {
-        private readonly MongoDBConfig _config;
         private readonly MongoClient _mongoClient;
+        private readonly IMongoDatabase _database;
 
         public LogsController(IConfiguration configuration)
         {
-            _config = configuration.GetSection("MongoBD").Get<MongoDBConfig>();
-            _mongoClient = new MongoClient(new MongoClientSettings()
-            {
-                Server = new MongoServerAddress(_config.HostName),
-                UseSsl = _config.UseSSL,
-                ConnectTimeout = TimeSpan.FromMilliseconds(_config.Timeout),
-                DefaultCredentials = MongoCredentials.Create(_config.UserName, _config.Password),
-                MaxConnectionPoolSize = _config.MaxPoolSize,
-                ReadPreference = new ReadPreference(ReadPreferenceMode.Primary)
-            });
+            var address = configuration.GetValue<string>("MongoDB");
+            var mongoUrl = MongoUrl.Create(address);
+            var settings = MongoClientSettings.FromUrl(mongoUrl);
+            _mongoClient = new MongoClient(settings);
+            _database = _mongoClient.GetDatabase("logs");
         }
 
-        // GET api/logs
+        // GET api/logs/{typeName}
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public string Get(string typeName)
         {
-            return new string[] { "value1", "value2" };
+           return string.Empty;
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
+        // GET api/logs/{typeName}/{id}
+        [HttpGet("{typeName}/{id}")]
         public ActionResult<string> Get(int id)
         {
             return "value";
