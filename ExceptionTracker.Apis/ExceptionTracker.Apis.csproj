@@ -13,4 +13,6 @@
     <PackageReference Include="MongoDB.Driver" Version="2.7.0" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>
+
 </Project>
