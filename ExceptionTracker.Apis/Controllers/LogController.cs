@@ -44,7 +44,7 @@ namespace ExceptionTracker.Apis.Controllers
 
         // POST api/logs/{type}
         [HttpPost("/logs/{type}")]
-        public ActionResult Post(string type)
+        public ActionResult<List<string>> Post(string type)
         {
             using(var stream = new MemoryStream())
             {
@@ -54,11 +54,9 @@ namespace ExceptionTracker.Apis.Controllers
                 {
                     var json = reader.ReadToEnd();
                     var document = BsonDocument.Parse(json);
-                    repository.Insert(type, document);
+                    return repository.Insert(type, document);
                 }
             }
-            
-            return Ok();
         }
     }
 }

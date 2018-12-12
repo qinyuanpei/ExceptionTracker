@@ -30,10 +30,11 @@ namespace ExceptionTracker.Apis.Repository
             this.database = database;
         }
 
-        public void Insert(string entityType, params BsonDocument[] documents)
+        public List<string> Insert(string schemaName, params BsonDocument[] documents)
         {
-            var collection = database.GetCollection<BsonDocument>(entityType);
+            var collection = database.GetCollection<BsonDocument>(schemaName);
             collection.InsertMany(documents);
+            return documents.Select(e=>e.GetValue("_id").ToString()).ToList();
         }
 
         public Task InsertAsync(string entityType, params BsonDocument[] documents)
