@@ -31,11 +31,11 @@ namespace ExceptionTracker.Apis.Controllers
 
         // GET api/logs/{schemaName}/{id}
         [HttpGet("/logs/{schemaName}/{id}")]
-        public ActionResult<IEnumerable<BsonDocument>> Get(string schemaName,string id)
+        public string Get(string schemaName, string id)
         {
             var records = repository.GetById(schemaName, id);
-            if (records == null || !records.Any()) return NotFound();
-            return records.ToList();
+            var ss = records.ToJson();
+            return records.FirstOrDefault().ToJson();
         }
 
         // GET api/logs/{schemaName}
@@ -56,11 +56,11 @@ namespace ExceptionTracker.Apis.Controllers
 
         // PUT api/logs/{schemaName}/{id}
         [HttpPut("/logs/{schemaName}/{id}")]
-        public ActionResult<List<BsonDocument>> Put(string schemaName,string id)
+        public ActionResult<List<BsonDocument>> Put(string schemaName, string id)
         {
             var json = Request.ReadAsString();
             var document = BsonDocument.Parse(json);
-            return repository.Update(schemaName, document).ToList();
+            return repository.Update(schemaName, id, document).ToList();
         }
 
         // DELETE api/logs/{schemaName}/{id}

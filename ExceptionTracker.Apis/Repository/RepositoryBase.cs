@@ -94,7 +94,7 @@ namespace ExceptionTracker.Apis.Repository
         {
             var ids = documents.Select(e => e.GetValue("_id").ToString()).ToArray();
             var collection = database.GetCollection<BsonDocument>(schemaName);
-            var updateOptions = new UpdateOptions() {IsUpsert = true};
+            var updateOptions = new UpdateOptions() { IsUpsert = true };
             foreach (var document in documents)
             {
                 var findFilter = Builders<BsonDocument>.Filter.Eq("_id", document.GetValue("_id"));
@@ -104,5 +104,23 @@ namespace ExceptionTracker.Apis.Repository
 
             return GetById(schemaName, ids);
         }
+
+        /// <summary>
+        /// 更新数据
+        /// </summary>
+        /// <param name="schemaName">集合名称</param>
+        /// <param name="id">Id</param>
+        /// <param name="document">更新的文档</param>
+        /// <returns></returns>
+        public IEnumerable<BsonDocument> Update(string schemaName, string id, BsonDocument document)
+        {
+            var collection = database.GetCollection<BsonDocument>(schemaName);
+            var updateOptions = new UpdateOptions() { IsUpsert = true };
+            var findFilter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
+            var updateDefines = Builders<BsonDocument>.Update.Combine(document.BuildUpdateDefine(null));
+            collection.UpdateOne(findFilter, updateDefines, updateOptions);
+            return GetById(schemaName, id);
+        }
+
     }
 }
