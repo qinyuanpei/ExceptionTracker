@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ExceptionTracker.Apis.Models;
 using ExceptionTracker.Apis.Utils;
 
 namespace ExceptionTracker.Apis.Repository
@@ -122,5 +123,16 @@ namespace ExceptionTracker.Apis.Repository
             return GetById(schemaName, id);
         }
 
+        /// <summary>
+        /// 复杂查询
+        /// </summary>
+        /// <param name="schemaName">集合名称</param>
+        /// <param name="parameters">查询参数</param>
+        /// <returns></returns>
+        public IEnumerable<BsonDocument> GetByQuery(string schemaName, QueryParameter<BsonDocument> parameters)
+        {
+            var collection = database.GetCollection<BsonDocument>(schemaName);
+            var sort
+        }
     }
 }
