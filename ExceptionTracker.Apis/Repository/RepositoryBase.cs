@@ -1,9 +1,11 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ExceptionTracker.Apis.Utils;
 
 namespace ExceptionTracker.Apis.Repository
 {
@@ -30,29 +32,77 @@ namespace ExceptionTracker.Apis.Repository
             this.database = database;
         }
 
-        public List<string> Insert(string schemaName, params BsonDocument[] documents)
+        /// <summary>
+        /// 插入数据
+        /// </summary>
+        /// <param name="schemaName">集合名称</param>
+        /// <param name="documents">一个或多个文档</param>
+        /// <returns></returns>
+        public IEnumerable<BsonDocument> Insert(string schemaName, params BsonDocument[] documents)
         {
             var collection = database.GetCollection<BsonDocument>(schemaName);
             collection.InsertMany(documents);
-            return documents.Select(e=>e.GetValue("_id").ToString()).ToList();
-        }
-
-        public Task InsertAsync(string entityType, params BsonDocument[] documents)
-        {
-            var collection = database.GetCollection<BsonDocument>(nameof(entityType));
-            return collection.InsertManyAsync(documents);
+            return documents;
         }
 
         /// <summary>
-        /// 通过主键查找数据
+        /// 通过Id查找数据
         /// </summary>
-        /// <param name="schema"></param>
-        /// <param name="id"></param>
+        /// <param name="schemaName">集合名称</param>
+        /// <param name="ids">一个或多个Id</param>
         /// <returns></returns>
-        public BsonDocument GetById(string schema, string id)
+        public IEnumerable<BsonDocument> GetById(string schemaName, params string[] ids)
         {
-            var collection = database.GetCollection<BsonDocument>(schema);
-            return collection.Find(new BsonDocument("_id",new ObjectId(id))).FirstOrDefault();;
+            var keys = ids.Select(id => new ObjectId(id)).ToList();
+            var collection = database.GetCollection<BsonDocument>(schemaName);
+            var findFiter = Builders<BsonDocument>.Filter.In("_id", keys);
+            return collection.Find(findFiter).ToList();
+        }
+
+        /// <summary>
+        /// 返回全部数据
+        /// </summary>
+        /// <param name="schemaName"></param>
+        /// <returns></returns>
+        public IEnumerable<BsonDocument> GetAll(string schemaName)
+        {
+            var collection = database.GetCollection<BsonDocument>(schemaName);
+            return collection.Find(new BsonDocument()).ToList();
+        }
+
+        /// <summary>
+        /// 通过Id删除数据
+        /// </summary>
+        /// <param name="schemaName">集合名称</param>
+        /// <param name="ids">一个或多个id</param>
+        public int Delete(string schemaName, params string[] ids)
+        {
+            var keys = ids.Select(id => new ObjectId(id)).ToList();
+            var collection = database.GetCollection<BsonDocument>(schemaName);
+            var deleteFilter = Builders<BsonDocument>.Filter.In("_id", keys);
+            var result = collection.DeleteOne(deleteFilter);
+            return (int)result.DeletedCount;
+        }
+
+        /// <summary>
+        /// 更新数据
+        /// </summary>
+        /// <param name="schemaName">集合名称</param>
+        /// <param name="documents">一个或多个文档</param>
+        /// <returns></returns>
+        public IEnumerable<BsonDocument> Update(string schemaName, params BsonDocument[] documents)
+        {
+            var ids = documents.Select(e => e.GetValue("_id").ToString()).ToArray();
+            var collection = database.GetCollection<BsonDocument>(schemaName);
+            var updateOptions = new UpdateOptions() {IsUpsert = true};
+            foreach (var document in documents)
+            {
+                var findFilter = Builders<BsonDocument>.Filter.Eq("_id", document.GetValue("_id"));
+                var updateDefines = Builders<BsonDocument>.Update.Combine(document.BuildUpdateDefine(null));
+                collection.UpdateOne(findFilter, updateDefines, updateOptions);
+            }
+
+            return GetById(schemaName, ids);
         }
     }
 }
