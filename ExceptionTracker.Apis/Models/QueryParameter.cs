@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ExceptionTracker.Apis.Utils
+namespace ExceptionTracker.Apis.Models
 {
-    public class QueryDefineEx
+    public class QueryParameter
     {
-
     }
 }

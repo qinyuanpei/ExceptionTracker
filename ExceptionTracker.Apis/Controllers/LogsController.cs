@@ -68,7 +68,6 @@ namespace ExceptionTracker.Apis.Controllers
         public ActionResult Delete(string schemaName, string id)
         {
             var json = Request.ReadAsString();
-            var document = BsonDocument.Parse(json);
             repository.Delete(schemaName, id);
             return Ok();
         }
