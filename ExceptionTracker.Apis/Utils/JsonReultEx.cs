@@ -8,6 +8,9 @@ namespace ExceptionTracker.Apis.Utils
 {
     public class JsonReultEx<T> : ActionResult
     {
-
+        public override void ExecuteResult(ActionContext context)
+        {
+            
+        }
     }
 }

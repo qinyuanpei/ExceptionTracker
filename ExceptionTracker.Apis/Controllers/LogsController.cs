@@ -49,7 +49,7 @@ namespace ExceptionTracker.Apis.Controllers
         [HttpPost("/logs/{schemaName}")]
         public ActionResult Post(string schemaName)
         {
-            var json = Request.ReadAsString();
+            var json = Request.Body.ReadAsString();
             var document = BsonDocument.Parse(json);
             var list =  repository.Insert(schemaName, document).Select(e => e.AsObject()).ToList();
             return new JsonResult(list);
@@ -59,7 +59,7 @@ namespace ExceptionTracker.Apis.Controllers
         [HttpPut("/logs/{schemaName}/{id}")]
         public ActionResult Put(string schemaName, string id)
         {
-            var json = Request.ReadAsString();
+            var json = Request.Body.ReadAsString();
             var document = BsonDocument.Parse(json);
             var list =  repository.Update(schemaName, id, document).Select(e => e.AsObject()).ToList();
             return new JsonResult(list);

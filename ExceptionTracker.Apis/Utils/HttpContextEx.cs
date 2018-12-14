@@ -14,16 +14,11 @@ namespace ExceptionTracker.Apis.Utils
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public static string ReadAsString(this HttpRequest request)
+        public static string ReadAsString(this Stream stream)
         {
-            using (var memoryStream = new MemoryStream())
+            using (var reader = new StreamReader(stream))
             {
-                request.Body.CopyTo(memoryStream);
-                memoryStream.Position = 0;
-                using (var reader = new StreamReader(memoryStream))
-                {
-                    return reader.ReadToEnd();
-                }
+                return reader.ReadToEnd();
             }
         }
     }
