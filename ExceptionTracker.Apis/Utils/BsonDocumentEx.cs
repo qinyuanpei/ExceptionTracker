@@ -31,7 +31,7 @@ namespace ExceptionTracker.Apis.Utils
             if (bsonValue.IsBsonDocument)
                 return bsonValue.AsBsonDocument.ToDictionary();
             else if (bsonValue.IsBsonArray)
-                return bsonValue.AsBsonArray.Select(e => e.AsObject()).ToArray();
+                return bsonValue.AsBsonArray.ToList().Select(e => e.AsObject()).ToList();
             else if (bsonValue.IsBoolean)
                 return bsonValue.AsBoolean;
             else if (bsonValue.IsValidDateTime)
