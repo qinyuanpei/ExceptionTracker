@@ -69,7 +69,7 @@ namespace ExceptionTracker.Apis.Controllers
         [HttpDelete("/logs/{schemaName}/{id}")]
         public ActionResult Delete(string schemaName, string id)
         {
-            var json = Request.ReadAsString();
+            var json = Request.Body.ReadAsString();
             repository.Delete(schemaName, id);
             return Ok();
         }

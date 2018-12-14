@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using ExceptionTracker.Apis.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExceptionTracker.Apis.Filters
 {
     /// <summary>
-    /// 模型校验过滤器定义
+    /// 模型校验过滤器
     /// </summary>
-    public class ModelValidationAttribute : IActionFilter
+    public class ModelValidationFilter : IActionFilter
     {
         public void OnActionExecuted(ActionExecutedContext context)
         {
@@ -31,7 +32,7 @@ namespace ExceptionTracker.Apis.Filters
                 {
                     Flag = false,
                     Result = null,
-                    StatusCode = "200",
+                    StatusCode = (int)HttpStatusCode.BadRequest,
                     Msssage = string.Join(",", errorMsgs),
                 };
 
