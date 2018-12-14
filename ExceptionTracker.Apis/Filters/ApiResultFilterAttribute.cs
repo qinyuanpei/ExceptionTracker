@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using ExceptionTracker.Apis.Models;
@@ -22,7 +23,7 @@ namespace ExceptionTracker.Apis.Filters
                     {
                         Flag = true,
                         Result = result,
-                        StatusCode = "200",
+                        StatusCode = (int)HttpStatusCode.OK,
                         Msssage = string.Empty
                     });
                 }
@@ -32,7 +33,7 @@ namespace ExceptionTracker.Apis.Filters
                     {
                         Flag = false,
                         Result = null,
-                        StatusCode = "404",
+                        StatusCode = (int)HttpStatusCode.OK,
                         Msssage = string.Empty
                     });
                 }

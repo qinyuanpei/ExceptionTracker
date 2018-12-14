@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Utils\FilterDefinitionEx.cs" />
+    <Compile Remove="Utils\FilterDefinitionEx.cs" />
   </ItemGroup>
 
   <ItemGroup>

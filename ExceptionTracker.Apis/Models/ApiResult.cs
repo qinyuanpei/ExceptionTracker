@@ -29,7 +29,7 @@ namespace ExceptionTracker.Apis.Models
         /// </summary>
         public bool Flag { get; set; }
 
-        public string StatusCode { get; set; }
+        public int StatusCode { get; set; }
 
         public string Msssage { get; set; }
 
