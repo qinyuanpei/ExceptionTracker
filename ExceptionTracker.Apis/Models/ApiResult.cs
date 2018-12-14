@@ -20,4 +20,19 @@ namespace ExceptionTracker.Apis.Models
 
         public TResult Result { get; set; }
     }
+
+    [Serializable]
+    public class ApiResult
+    {
+        /// <summary>
+        /// 结果标记
+        /// </summary>
+        public bool Flag { get; set; }
+
+        public string StatusCode { get; set; }
+
+        public string Msssage { get; set; }
+
+        public object Result { get; set; }
+    }
 }
