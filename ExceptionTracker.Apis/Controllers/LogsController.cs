@@ -34,7 +34,6 @@ namespace ExceptionTracker.Apis.Controllers
         public ActionResult Get(string schemaName, string id)
         {
             var records = repository.GetById(schemaName, id);
-            var ss = records.ToJson();
             return new JsonResult(records.FirstOrDefault().AsObject());
         }
 
