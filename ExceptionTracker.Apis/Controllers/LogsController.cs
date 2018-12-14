@@ -31,36 +31,39 @@ namespace ExceptionTracker.Apis.Controllers
 
         // GET api/logs/{schemaName}/{id}
         [HttpGet("/logs/{schemaName}/{id}")]
-        public string Get(string schemaName, string id)
+        public ActionResult Get(string schemaName, string id)
         {
             var records = repository.GetById(schemaName, id);
             var ss = records.ToJson();
-            return records.FirstOrDefault().ToJson();
+            return new JsonResult(records.FirstOrDefault().AsObject());
         }
 
         // GET api/logs/{schemaName}
         [HttpGet("/logs/{schemaName}")]
-        public IActionResult GetAll(string schemaName)
+        public ActionResult GetAll(string schemaName)
         {
-            return Ok(repository.GetAll());
+            var list = repository.GetAll(schemaName).Select(e => e.AsObject()).ToList();
+            return new JsonResult(list);
         }
 
         // POST api/logs/{schemaName}
         [HttpPost("/logs/{schemaName}")]
-        public ActionResult<List<BsonDocument>> Post(string schemaName)
+        public ActionResult Post(string schemaName)
         {
             var json = Request.ReadAsString();
             var document = BsonDocument.Parse(json);
-            return repository.Insert(schemaName, document).ToList();
+            var list =  repository.Insert(schemaName, document).Select(e => e.AsObject()).ToList();
+            return new JsonResult(list);
         }
 
         // PUT api/logs/{schemaName}/{id}
         [HttpPut("/logs/{schemaName}/{id}")]
-        public ActionResult<List<BsonDocument>> Put(string schemaName, string id)
+        public ActionResult Put(string schemaName, string id)
         {
             var json = Request.ReadAsString();
             var document = BsonDocument.Parse(json);
-            return repository.Update(schemaName, id, document).ToList();
+            var list =  repository.Update(schemaName, id, document).Select(e => e.AsObject()).ToList();
+            return new JsonResult(list);
         }
 
         // DELETE api/logs/{schemaName}/{id}

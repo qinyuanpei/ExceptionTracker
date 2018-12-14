@@ -131,8 +131,7 @@ namespace ExceptionTracker.Apis.Repository
         /// <returns></returns>
         public IEnumerable<BsonDocument> GetByQuery(string schemaName, QueryParameter<BsonDocument> parameters)
         {
-            var collection = database.GetCollection<BsonDocument>(schemaName);
-            var sort
+            return null;
         }
     }
 }
