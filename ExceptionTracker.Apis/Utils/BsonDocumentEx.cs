@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Bson;
+using System.Text.RegularExpressions;
 
 namespace ExceptionTracker.Apis.Utils
 {
@@ -13,12 +14,13 @@ namespace ExceptionTracker.Apis.Utils
         /// </summary>
         /// <param name="document"></param>
         /// <returns></returns>
-        public static IDictionary<string, object> ToDictionary(this BsonDocument document)
+        public static object ToJsonEx(this BsonDocument document)
         {
-            return document.Elements.ToDictionary(
-                e => e.Name,
-                e => e.Value.AsObject()
-            );
+            //针对JSON对象数组序列化进行特殊处理
+            var keys = document.Elements.Select(e => e.Name);
+            if (keys.Any(k => Regex.Match(k, @"^[0-9]\d*").Success))
+                return document.Elements.Select(e => e.Value.AsObject()).ToList();
+            return document.Elements.ToDictionary(e => e.Name, e => e.Value.AsObject());
         }
 
         /// <summary>
@@ -29,9 +31,9 @@ namespace ExceptionTracker.Apis.Utils
         public static object AsObject(this BsonValue bsonValue)
         {
             if (bsonValue.IsBsonDocument)
-                return bsonValue.AsBsonDocument.ToDictionary();
+                return bsonValue.AsBsonDocument.ToJsonEx();
             else if (bsonValue.IsBsonArray)
-                return bsonValue.AsBsonArray.ToList().Select(e => e.AsObject()).ToList();
+                return bsonValue.AsBsonArray;
             else if (bsonValue.IsBoolean)
                 return bsonValue.AsBoolean;
             else if (bsonValue.IsValidDateTime)

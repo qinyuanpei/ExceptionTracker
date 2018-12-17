@@ -33,7 +33,7 @@ namespace ExceptionTracker.Apis.Filters
                     {
                         Flag = false,
                         Result = null,
-                        StatusCode = (int)HttpStatusCode.OK,
+                        StatusCode = (int)HttpStatusCode.OK, 
                         Msssage = string.Empty
                     });
                 }

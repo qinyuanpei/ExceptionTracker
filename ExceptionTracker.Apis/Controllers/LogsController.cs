@@ -34,14 +34,14 @@ namespace ExceptionTracker.Apis.Controllers
         public ActionResult Get(string schemaName, string id)
         {
             var records = repository.GetById(schemaName, id);
-            return new JsonResult(records.FirstOrDefault().AsObject());
+            return new JsonResult(records.FirstOrDefault().ToJsonEx());
         }
 
         // GET api/logs/{schemaName}
         [HttpGet("/logs/{schemaName}")]
         public ActionResult GetAll(string schemaName)
         {
-            var list = repository.GetAll(schemaName).Select(e => e.AsObject()).ToList();
+            var list = repository.GetAll(schemaName).Select(e => e.ToJsonEx()).ToList();
             return new JsonResult(list);
         }
 
@@ -51,7 +51,7 @@ namespace ExceptionTracker.Apis.Controllers
         {
             var json = Request.Body.ReadAsString();
             var document = BsonDocument.Parse(json);
-            var list =  repository.Insert(schemaName, document).Select(e => e.AsObject()).ToList();
+            var list =  repository.Insert(schemaName, document).Select(e => e.ToJsonEx()).ToList();
             return new JsonResult(list);
         }
 
@@ -61,7 +61,7 @@ namespace ExceptionTracker.Apis.Controllers
         {
             var json = Request.Body.ReadAsString();
             var document = BsonDocument.Parse(json);
-            var list =  repository.Update(schemaName, id, document).Select(e => e.AsObject()).ToList();
+            var list =  repository.Update(schemaName, id, document).Select(e => e.ToJsonEx()).ToList();
             return new JsonResult(list);
         }
 
@@ -69,7 +69,6 @@ namespace ExceptionTracker.Apis.Controllers
         [HttpDelete("/logs/{schemaName}/{id}")]
         public ActionResult Delete(string schemaName, string id)
         {
-            var json = Request.Body.ReadAsString();
             repository.Delete(schemaName, id);
             return Ok();
         }
