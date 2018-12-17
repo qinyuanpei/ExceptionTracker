@@ -41,8 +41,8 @@ namespace ExceptionTracker.Apis.Controllers
         [HttpGet("/logs/{schemaName}")]
         public ActionResult GetAll(string schemaName)
         {
-            var list = repository.GetAll(schemaName).Select(e => e.ToJsonEx()).ToList();
-            return new JsonResult(list);
+            var records = repository.GetAll(schemaName).ToJsonEx();
+            return new JsonResult(records);
         }
 
         // POST api/logs/{schemaName}
@@ -51,8 +51,8 @@ namespace ExceptionTracker.Apis.Controllers
         {
             var json = Request.Body.ReadAsString();
             var document = BsonDocument.Parse(json);
-            var list =  repository.Insert(schemaName, document).Select(e => e.ToJsonEx()).ToList();
-            return new JsonResult(list);
+            var records =  repository.Insert(schemaName, document).ToJsonEx();
+            return new JsonResult(records);
         }
 
         // PUT api/logs/{schemaName}/{id}
@@ -61,8 +61,8 @@ namespace ExceptionTracker.Apis.Controllers
         {
             var json = Request.Body.ReadAsString();
             var document = BsonDocument.Parse(json);
-            var list =  repository.Update(schemaName, id, document).Select(e => e.ToJsonEx()).ToList();
-            return new JsonResult(list);
+            var records =  repository.Update(schemaName, id, document).ToJsonEx();
+            return new JsonResult(records);
         }
 
         // DELETE api/logs/{schemaName}/{id}

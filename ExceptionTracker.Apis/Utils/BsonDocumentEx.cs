@@ -10,9 +10,9 @@ namespace ExceptionTracker.Apis.Utils
     public static class BsonDocumentEx
     {
         /// <summary>
-        /// 转换BsonDocument为字典结构
+        /// ToJsonEx扩展方法
         /// </summary>
-        /// <param name="document"></param>
+        /// <param name="document">多个BsonDocument</param>
         /// <returns></returns>
         public static object ToJsonEx(this BsonDocument document)
         {
@@ -21,6 +21,17 @@ namespace ExceptionTracker.Apis.Utils
             if (keys.Any(k => Regex.Match(k, @"^[0-9]\d*").Success))
                 return document.Elements.Select(e => e.Value.AsObject()).ToList();
             return document.Elements.ToDictionary(e => e.Name, e => e.Value.AsObject());
+        }
+
+
+        /// <summary>
+        /// ToJsonEx扩展方法
+        /// </summary>
+        /// <param name="document">多个BsonDocument</param>
+        /// <returns></returns>
+        public static List<object> ToJsonEx(this IEnumerable<BsonDocument> documents)
+        {
+            return documents.Select(e=>e.ToJsonEx()).ToList();
         }
 
         /// <summary>
