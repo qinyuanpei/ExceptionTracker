@@ -68,6 +68,8 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
         protected override void Append(LoggingEvent loggingEvent)
         {
             var document = CreateBsonDocument(loggingEvent);
+            var collection = GetDatabase().GetCollection<BsonDocument>(CollectionName);
+            collection.InsertOne(document);
         }
 
         protected override void Append(LoggingEvent[] loggingEvents)
@@ -138,12 +140,10 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
         public IMongoDatabase GetDatabase()
         {
             var url = MongoUrl.Create(ConnectionString);
-            MongoClientSettings settings = MongoClientSettings.FromUrl(url);
-            settings.SslSettings = url.UseSsl
-            MongoClient client = new MongoClient(settings);
-
-            IMongoDatabase db = client.GetDatabase(url.DatabaseName ?? "log4net");
-            return db;
+            var settings = MongoClientSettings.FromUrl(url);
+            var client = new MongoClient(settings);
+            var database = client.GetDatabase(url.DatabaseName ?? "etlog");
+            return database;
         } 
     }
 }
