@@ -18,8 +18,10 @@ namespace ExceptionTracker.Logger.NLog
 
         [RequiredParameter]
         public string Name { get; set; }
+
         [RequiredParameter]
         public string Layout { get; set; }
+
         [RequiredParameter]
         public string BsonType { get; set; }
     }
