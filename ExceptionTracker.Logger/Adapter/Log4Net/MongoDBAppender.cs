@@ -13,7 +13,7 @@ using MongoDB.Driver;
 namespace ExceptionTracker.Logger.Adapter.Log4Net
 {
 
-    public class MongoDBAppender : AppenderSkeleton,IMongoDBAdapter
+    public class MongoDBAppender : AppenderSkeleton, IMongoDBAdapter
     {
         /// <summary>
         /// 数据库连接字符串
@@ -74,7 +74,9 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
 
         protected override void Append(LoggingEvent[] loggingEvents)
         {
-
+            var documents = loggingEvents.Select(l => CreateBsonDocument(l));
+            var collection = GetDatabase().GetCollection<BsonDocument>(CollectionName);
+            collection.InsertMany(documents);
         }
 
         private BsonDocument CreateBsonDocument(LoggingEvent loggingEvent)
@@ -86,10 +88,12 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
                 retDocument.Add("timestamp", loggingEvent.TimeStamp);
                 retDocument.Add("level", loggingEvent.Level.ToString());
                 retDocument.Add("thread", loggingEvent.ThreadName);
-                retDocument.Add("userName", loggingEvent.UserName);
+                if (!string.IsNullOrEmpty(loggingEvent.UserName) && loggingEvent.UserName != "NOT AVAILABLE")
+                    retDocument.Add("userName", loggingEvent.UserName);
                 retDocument.Add("message", loggingEvent.RenderedMessage);
                 retDocument.Add("loggerName", loggingEvent.LoggerName);
-                retDocument.Add("domain", loggingEvent.Domain);
+                if (!string.IsNullOrEmpty(loggingEvent.Domain) && loggingEvent.Domain != "NOT AVAILABLE")
+                    retDocument.Add("domain", loggingEvent.Domain);
                 retDocument.Add("machineName", Environment.MachineName);
             };
 
@@ -133,7 +137,7 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
                     retDocument.Add(layoutField.Name, bsonValue);
                 }
             }
-            
+
             return retDocument;
         }
 
@@ -142,8 +146,8 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
             var url = MongoUrl.Create(ConnectionString);
             var settings = MongoClientSettings.FromUrl(url);
             var client = new MongoClient(settings);
-            var database = client.GetDatabase(url.DatabaseName ?? "etlog");
+            var database = client.GetDatabase(url.DatabaseName ?? "etlogs");
             return database;
-        } 
+        }
     }
 }

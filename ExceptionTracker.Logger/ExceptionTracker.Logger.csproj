@@ -3,6 +3,25 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>ExceptionTracker.Logger</RootNamespace>
+	<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Adapter\IMongoDBAdapter.cs" />
+    <Compile Include="Adapter\Log4Net\Log4NetExtend.cs" />
+    <Compile Include="Adapter\Log4Net\MongoDBAppender.cs" />
+    <Compile Include="Adapter\Log4Net\MongoDBAppenderField.cs" />
+    <Compile Include="Adapter\NLog\MongoDBTarget.cs" />
+    <Compile Include="DefaultLogAdapter.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="LoggerClient.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="Microsoft.Net.Compilers" Version="3.0.0-beta4-final" />
+    <PackageReference Include="MongoDB.Driver" Version="2.9.0-beta1" />
+    <PackageReference Include="NLog" Version="4.6.1" />
+  </ItemGroup>
 
 </Project>

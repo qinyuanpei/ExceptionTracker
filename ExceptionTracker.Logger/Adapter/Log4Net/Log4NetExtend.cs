@@ -29,7 +29,7 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
 
             return new BsonDocument
             {
-                {"soirce", loggingEvent.ExceptionObject.Source},
+                {"source", loggingEvent.ExceptionObject.Source},
                 {"message", loggingEvent.ExceptionObject.Message},
                 {"stackTrace", loggingEvent.ExceptionObject.StackTrace}
             };
