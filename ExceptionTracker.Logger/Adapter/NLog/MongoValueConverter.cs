@@ -8,13 +8,13 @@ namespace ExceptionTracker.Logger.Adapter.NLog
 {
     public static class MongoValueConverter
     {
-        public static BsonValue Convert<T>(string value) where T : class
+        public static BsonValue Convert<T>(string value)
         {
             BsonValue bsonValue = null;
-            if(!typeof(T).IsValueType)
+            if (!typeof(T).IsValueType)
                 throw new Exception("Unsupported type to convert as a BsonValue");
 
-            if (typeof(T).Name == "Boolean" && MongoValueConverter.TryBoolean(value, out bsonValue)) 
+            if (typeof(T).Name == "Boolean" && MongoValueConverter.TryBoolean(value, out bsonValue))
                 return bsonValue;
 
             if (typeof(T).Name == "DateTime" && MongoValueConverter.TryDateTime(value, out bsonValue))
@@ -27,6 +27,30 @@ namespace ExceptionTracker.Logger.Adapter.NLog
                 return bsonValue;
 
             if (typeof(T).Name == "Int64" && MongoValueConverter.TryInt64(value, out bsonValue))
+                return bsonValue;
+
+            throw new Exception("Unsupported type or value to convert as a BsonValue");
+        }
+
+        public static BsonValue Convert(string value, string type)
+        {
+            BsonValue bsonValue = null;
+            //if (!typeof(T).IsValueType)
+            //    throw new Exception("Unsupported type to convert as a BsonValue");
+
+            if (type == "Boolean" && MongoValueConverter.TryBoolean(value, out bsonValue))
+                return bsonValue;
+
+            if (type == "DateTime" && MongoValueConverter.TryDateTime(value, out bsonValue))
+                return bsonValue;
+
+            if (type == "Double" && MongoValueConverter.TryDouble(value, out bsonValue))
+                return bsonValue;
+
+            if (type == "Int32" && MongoValueConverter.TryInt32(value, out bsonValue))
+                return bsonValue;
+
+            if (type == "Int64" && MongoValueConverter.TryInt64(value, out bsonValue))
                 return bsonValue;
 
             throw new Exception("Unsupported type or value to convert as a BsonValue");

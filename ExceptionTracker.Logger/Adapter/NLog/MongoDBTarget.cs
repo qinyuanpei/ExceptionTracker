@@ -73,6 +73,7 @@ namespace ExceptionTracker.Logger.Adapter.NLog
         {
             var retDocument = new BsonDocument();
 
+            //基础日志信息
             if (UseBaseInfo && logEvent != null)
             {
                 retDocument.Add("timestamp", logEvent.TimeStamp);
@@ -85,55 +86,22 @@ namespace ExceptionTracker.Logger.Adapter.NLog
                 retDocument.Add("machineName", Environment.MachineName);
             };
 
+            //自定义字段信息
             if (UseCustomFields && Fields.Any())
             {
                 foreach (var field in Fields)
                 {
-                    var bsonValue = GetBsonValueWithLayout()
-                    retDocument.Add(field.Name,GetBsonValueWithLayout<>())
+                    var bsonValue = GetBsonValueWithField(logEvent, field);
+                    if (bsonValue != null)
+                        retDocument.Add(field.Name, bsonValue);
                 }
             }
 
-            //if (UseLocationInfo && loggingEvent.LocationInformation != null)
-            //{
-            //    retDocument.Add("fileName", loggingEvent.LocationInformation.FileName);
-            //    retDocument.Add("className", loggingEvent.LocationInformation.ClassName);
-            //    retDocument.Add("lineNumber", loggingEvent.LocationInformation.LineNumber);
-            //    retDocument.Add("methodName", loggingEvent.LocationInformation.MethodName);
-            //}
-
-            //if (UseMessageObject && loggingEvent.MessageObject != null)
-            //{
-            //    var properties = loggingEvent.MessageObject.GetType().GetProperties();
-            //    foreach (var property in properties)
-            //    {
-            //        var propertyValue = property.GetValue(loggingEvent.MessageObject);
-            //        if (propertyValue != null)
-            //            retDocument.Add(property.Name, propertyValue.ToString());
-            //    }
-            //}
-
+            //异常堆栈信息
             if (UseExceptionObject && logEvent.Exception != null)
             {
-                retDocument.Add("innerException", logEvent.GetExceptionDocument());
+                retDocument.Add("exception", logEvent.GetExceptionDocument());
             }
-
-            //if (UseProperties && loggingEvent.Properties != null)
-            //{
-            //    retDocument.Add("properties", loggingEvent.GetPropertiesDocument());
-            //}
-
-            //if (_layoutFields.Any())
-            //{
-            //    foreach (var layoutField in _layoutFields)
-            //    {
-            //        BsonValue bsonValue;
-            //        object fieldValue = layoutField.Layout.Format(loggingEvent);
-            //        if (!BsonTypeMapper.TryMapToBsonValue(fieldValue, out bsonValue))
-            //            bsonValue = fieldValue.ToBsonDocument();
-            //        retDocument.Add(layoutField.Name, bsonValue);
-            //    }
-            //}
 
             return retDocument;
         }
@@ -147,12 +115,16 @@ namespace ExceptionTracker.Logger.Adapter.NLog
             return MongoValueConverter.Convert<T>(value);
         }
 
-        private BsonValue GetBsonValueWithField(LogEventInfo logEvent, Layout layout)
+        private BsonValue GetBsonValueWithField(LogEventInfo logEvent, MongoDBLayoutField field)
         {
+            var type = field.BsonType;
+            var layout = field.Layout;
+            if (layout == null)
+                return null;
             var value = RenderLogEvent(layout, logEvent);
             if (string.IsNullOrEmpty(value))
                 return null;
-            return MongoValueConverter.Convert(value,layout.bs);
+            return MongoValueConverter.Convert(value, type);
         }
     }
 }

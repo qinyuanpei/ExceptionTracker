@@ -10,6 +10,7 @@ namespace ExceptionTracker.Tests
     public class Log4NetLoggerTest
     {
         private readonly ILog logger;
+
         public Log4NetLoggerTest()
         {
             ILoggerRepository repository = LogManager.CreateRepository("EtlogRepository");
@@ -24,6 +25,19 @@ namespace ExceptionTracker.Tests
             logger.Warn("这是一条Warn级别的日志");
             logger.Error("这是一条Error级别的日志");
             logger.Fatal("这是一条Fatal级别的日志");
+        }
+
+        [Fact]
+        public void Test_LogException()
+        {
+            try
+            {
+                var file = File.Open("D:\\DUAL.txt", FileMode.Open);
+            }
+            catch (Exception ex)
+            {
+                logger.Error("指定的文件不存在");
+            }
         }
     }
 }
