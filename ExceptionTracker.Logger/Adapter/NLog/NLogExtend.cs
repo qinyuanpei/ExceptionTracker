@@ -3,34 +3,35 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using NLog;
+using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace ExceptionTracker.Logger.Adapter.NLog
 {
     internal static class NLogExtend
     {
-        public static BsonDocument GetPropertiesDocument(this LogEventInfo logEvent)
-        {
-            if (logEvent.Properties == null) return null;
-
-            var bsonDocument = new BsonDocument();
-            //foreach (PropertyEntry propertyEntry in logEvent.Properties)
-            //{
-            //    bsonDocument.Add(propertyEntry.Key.ToString(), propertyEntry.Value.ToString());
-            //}
-
-            return bsonDocument;
-        }
-
         public static BsonDocument GetExceptionDocument(this LogEventInfo logEvent)
         {
-            if (logEvent.Exception == null) return null;
+            if (logEvent.Exception == null)
+                return null;
 
-            return new BsonDocument
+            var document = new BsonDocument();
+            document.Add("message", new BsonString(logEvent.Exception.Message));
+            document.Add("baseMessage", new BsonString(logEvent.Exception.GetBaseException().Message));
+            document.Add("type", new BsonString(logEvent.Exception.GetType().ToString()));
+            document.Add("hResult", new BsonInt32(logEvent.Exception.HResult));
+            document.Add("source", new BsonString(logEvent.Exception.Source));
+            document.Add("stackTrace", new BsonString(logEvent.Exception.StackTrace));
+            var methodBase = logEvent.Exception.TargetSite;
+            if (methodBase != null)
             {
-                {"source", logEvent.Exception.Source},
-                {"message", logEvent.Exception.Message},
-                {"stackTrace", logEvent.Exception.StackTrace}
-            };
+                document.Add("methodName", new BsonString(methodBase.Name));
+                var assembly = methodBase.Module.Assembly.GetName();
+                document.Add("moduleName", new BsonString(assembly.Name));
+                document.Add("moduleVersion", new BsonString(assembly.Version.ToString()));
+            }
+
+            return document;
         }
     }
 }

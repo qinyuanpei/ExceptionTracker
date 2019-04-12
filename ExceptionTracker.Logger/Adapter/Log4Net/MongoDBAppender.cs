@@ -52,6 +52,11 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
         public bool UseProperties { get; set; }
 
         /// <summary>
+        /// 是否使用自定义字段
+        /// </summary>
+        public bool UseCustomFields { get; set; }
+
+        /// <summary>
         /// Appender字段集合
         /// </summary>
         private readonly List<MongoDBAppenderField> _layoutFields = new List<MongoDBAppenderField>();
@@ -118,7 +123,7 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
 
             if (UseExceptionObject && loggingEvent.ExceptionObject != null)
             {
-                retDocument.Add("innerException", loggingEvent.GetExceptionDocument());
+                retDocument.Add("exception", loggingEvent.GetExceptionDocument());
             }
 
             if (UseProperties && loggingEvent.Properties != null)
@@ -126,7 +131,7 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
                 retDocument.Add("properties", loggingEvent.GetPropertiesDocument());
             }
 
-            if (_layoutFields.Any())
+            if (UseCustomFields && _layoutFields.Any())
             {
                 foreach (var layoutField in _layoutFields)
                 {

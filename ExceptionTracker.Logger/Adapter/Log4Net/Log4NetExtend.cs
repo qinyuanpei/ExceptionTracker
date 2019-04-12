@@ -25,14 +25,26 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
 
         public static BsonDocument GetExceptionDocument(this LoggingEvent loggingEvent)
         {
-            if (loggingEvent.ExceptionObject == null) return null;
+            if (loggingEvent.ExceptionObject == null)
+                return null;
 
-            return new BsonDocument
+            var document = new BsonDocument();
+            document.Add("message", new BsonString(loggingEvent.ExceptionObject.Message));
+            document.Add("baseMessage", new BsonString(loggingEvent.ExceptionObject.GetBaseException().Message));
+            document.Add("type", new BsonString(loggingEvent.ExceptionObject.GetType().ToString()));
+            document.Add("hResult", new BsonInt32(loggingEvent.ExceptionObject.HResult));
+            document.Add("source", new BsonString(loggingEvent.ExceptionObject.Source));
+            document.Add("stackTrace", new BsonString(loggingEvent.ExceptionObject.StackTrace));
+            var methodBase = loggingEvent.ExceptionObject.TargetSite;
+            if (methodBase != null)
             {
-                {"source", loggingEvent.ExceptionObject.Source},
-                {"message", loggingEvent.ExceptionObject.Message},
-                {"stackTrace", loggingEvent.ExceptionObject.StackTrace}
-            };
+                document.Add("methodName", new BsonString(methodBase.Name));
+                var assembly = methodBase.Module.Assembly.GetName();
+                document.Add("moduleName", new BsonString(assembly.Name));
+                document.Add("moduleVersion", new BsonString(assembly.Version.ToString()));
+            }
+
+            return document;
         }
     }
 }
