@@ -11,7 +11,10 @@
     <Compile Include="Adapter\Log4Net\Log4NetExtend.cs" />
     <Compile Include="Adapter\Log4Net\MongoDBAppender.cs" />
     <Compile Include="Adapter\Log4Net\MongoDBAppenderField.cs" />
+    <Compile Include="Adapter\NLog\MongoDBLayoutField.cs" />
     <Compile Include="Adapter\NLog\MongoDBTarget.cs" />
+    <Compile Include="Adapter\NLog\MongoValueConverter.cs" />
+    <Compile Include="Adapter\NLog\NLogExtend.cs" />
     <Compile Include="DefaultLogAdapter.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="LoggerClient.cs" />
