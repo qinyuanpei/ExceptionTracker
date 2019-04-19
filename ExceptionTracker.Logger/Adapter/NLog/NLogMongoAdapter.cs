@@ -92,10 +92,10 @@ namespace ExceptionTracker.Logger.Adapter.NLog
 
             if (IncloudBaseInfo && logEvent != null)
             {
-                document.Add("timestamp", logEvent.TimeStamp);
-                document.Add("level", logEvent.Level.Name);
-                document.Add("message", logEvent.FormattedMessage);
-                document.Add("loggerName", logEvent.LoggerName);
+                document.Add(nameof(logEvent.TimeStamp), logEvent.TimeStamp);
+                document.Add(nameof(logEvent.Level), logEvent.Level.Name);
+                document.Add("Message", logEvent.FormattedMessage);
+                document.Add(nameof(logEvent.LoggerName), logEvent.LoggerName);
             };
 
             if (IncloudCustomFields && CustomFields.Any())
@@ -112,10 +112,12 @@ namespace ExceptionTracker.Logger.Adapter.NLog
 
             if (logEvent.Exception != null)
             {
-                document.Add("exception", new BsonDocument()
+                document.Add("Exception", new BsonDocument()
                 {
-                    {"message",logEvent.Exception.Message },
-                    {"stackTrace",logEvent.Exception.StackTrace },
+                    {"Message",logEvent.Exception.Message },
+                    {"Source",logEvent.Exception.Source },
+                    {"StackTrace",logEvent.Exception.StackTrace.Trim()},
+
                 });
             }
 
