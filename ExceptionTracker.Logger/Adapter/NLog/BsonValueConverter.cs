@@ -6,7 +6,7 @@ using MongoDB.Bson;
 
 namespace ExceptionTracker.Logger.Adapter.NLog
 {
-    public static class MongoValueConverter
+    public static class BsonValueConverter
     {
         public static BsonValue Convert<T>(string value)
         {
@@ -14,20 +14,22 @@ namespace ExceptionTracker.Logger.Adapter.NLog
             if (!typeof(T).IsValueType)
                 throw new Exception("Unsupported type to convert as a BsonValue");
 
-            if (typeof(T).Name == "Boolean" && MongoValueConverter.TryBoolean(value, out bsonValue))
+            if (typeof(T).Name == "Boolean" && BsonValueConverter.TryBoolean(value, out bsonValue))
                 return bsonValue;
 
-            if (typeof(T).Name == "DateTime" && MongoValueConverter.TryDateTime(value, out bsonValue))
+            if (typeof(T).Name == "DateTime" && BsonValueConverter.TryDateTime(value, out bsonValue))
                 return bsonValue;
 
-            if (typeof(T).Name == "Double" && MongoValueConverter.TryDouble(value, out bsonValue))
+            if (typeof(T).Name == "Double" && BsonValueConverter.TryDouble(value, out bsonValue))
                 return bsonValue;
 
-            if (typeof(T).Name == "Int32" && MongoValueConverter.TryInt32(value, out bsonValue))
+            if (typeof(T).Name == "Int32" && BsonValueConverter.TryInt32(value, out bsonValue))
                 return bsonValue;
 
-            if (typeof(T).Name == "Int64" && MongoValueConverter.TryInt64(value, out bsonValue))
+            if (typeof(T).Name == "Int64" && BsonValueConverter.TryInt64(value, out bsonValue))
                 return bsonValue;
+            if (typeof(T).Name == "String")
+                return value;
 
             throw new Exception("Unsupported type or value to convert as a BsonValue");
         }
@@ -38,20 +40,22 @@ namespace ExceptionTracker.Logger.Adapter.NLog
             //if (!typeof(T).IsValueType)
             //    throw new Exception("Unsupported type to convert as a BsonValue");
 
-            if (type == "Boolean" && MongoValueConverter.TryBoolean(value, out bsonValue))
+            if (type == "Boolean" && BsonValueConverter.TryBoolean(value, out bsonValue))
                 return bsonValue;
 
-            if (type == "DateTime" && MongoValueConverter.TryDateTime(value, out bsonValue))
+            if (type == "DateTime" && BsonValueConverter.TryDateTime(value, out bsonValue))
                 return bsonValue;
 
-            if (type == "Double" && MongoValueConverter.TryDouble(value, out bsonValue))
+            if (type == "Double" && BsonValueConverter.TryDouble(value, out bsonValue))
                 return bsonValue;
 
-            if (type == "Int32" && MongoValueConverter.TryInt32(value, out bsonValue))
+            if (type == "Int32" && BsonValueConverter.TryInt32(value, out bsonValue))
                 return bsonValue;
 
-            if (type == "Int64" && MongoValueConverter.TryInt64(value, out bsonValue))
+            if (type == "Int64" && BsonValueConverter.TryInt64(value, out bsonValue))
                 return bsonValue;
+            if (type == "String")
+                return value;
 
             throw new Exception("Unsupported type or value to convert as a BsonValue");
         }

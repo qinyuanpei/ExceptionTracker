@@ -17,14 +17,14 @@ namespace ExceptionTracker.Logger.Adapter.NLog
 
             var document = new BsonDocument();
             document.Add("message", new BsonString(logEvent.Exception.Message));
-            document.Add("baseMessage", new BsonString(logEvent.Exception.GetBaseException().Message));
-            document.Add("type", new BsonString(logEvent.Exception.GetType().ToString()));
-            document.Add("hResult", new BsonInt32(logEvent.Exception.HResult));
             document.Add("source", new BsonString(logEvent.Exception.Source));
             document.Add("stackTrace", new BsonString(logEvent.Exception.StackTrace));
             var methodBase = logEvent.Exception.TargetSite;
             if (methodBase != null)
             {
+                document.Add("fileName", new BsonString(string.Empty));
+                document.Add("lineNumber", -1);
+                document.Add("className", "");
                 document.Add("methodName", new BsonString(methodBase.Name));
                 var assembly = methodBase.Module.Assembly.GetName();
                 document.Add("moduleName", new BsonString(assembly.Name));

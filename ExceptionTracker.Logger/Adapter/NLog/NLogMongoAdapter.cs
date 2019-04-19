@@ -13,7 +13,8 @@ using NLog.Layouts;
 
 namespace ExceptionTracker.Logger.Adapter.NLog
 {
-    public class MongoDBTarget : Target, IMongoDBAdapter<LogEventInfo>
+    [Target("MongoAdapter")]
+    public class NLogMongoAdapter : Target, IMongoDBAdapter<LogEventInfo>
     {
         /// <summary>
         /// 数据库连接字符串
@@ -49,7 +50,7 @@ namespace ExceptionTracker.Logger.Adapter.NLog
         /// 自定义字段
         /// </summary>
         [ArrayParameter(typeof(MongoDBLayoutField), "field")]
-        public IList<MongoDBLayoutField> CustomFields { get; private set; }
+        public IList<MongoDBLayoutField> CustomFields { get; private set; } = new List<MongoDBLayoutField>();
 
         /// <summary>
         /// 返回当前数据库
@@ -85,8 +86,6 @@ namespace ExceptionTracker.Logger.Adapter.NLog
             collection.InsertOne(document);
         }
 
-
-
         public BsonDocument CreateBsonDocument(LogEventInfo logEvent)
         {
             var document = new BsonDocument();
@@ -104,30 +103,35 @@ namespace ExceptionTracker.Logger.Adapter.NLog
                 foreach (var field in CustomFields)
                 {
                     var bsonValue = GetBsonValueWithField(logEvent, field);
-                    if (bsonValue != null)
-                        document.Add(field.Name, bsonValue);
+                    if (bsonValue == null)
+                        continue;
+
+                    document.Add(field.Name, bsonValue);
                 }
             }
 
             if (logEvent.Exception != null)
             {
-                document.Add("exception", logEvent.GetExceptionDocument());
+                document.Add("exception", new BsonDocument()
+                {
+                    {"message",logEvent.Exception.Message },
+                    {"stackTrace",logEvent.Exception.StackTrace },
+                });
             }
 
-            //事件属性
             if (IncloudEventProperties && logEvent.HasProperties)
             {
                 foreach (var property in logEvent.Properties)
                 {
                     var propertyKey = property.Key.ToString();
-                    if (IgnoredEventProperties.Contains(propertyKey))
-                        continue;
-                    if (document.Contains(propertyKey))
+                    var propertyValue = property.Value.ToString();
+                    if (IgnoredEventProperties.Contains(propertyKey) || document.Contains(propertyKey))
                         continue;
 
-                    //document.Add(propertyKey,BsonValueConverter.);
+                    document.Add(propertyKey, propertyValue);
                 }
             }
+
             return document;
         }
 

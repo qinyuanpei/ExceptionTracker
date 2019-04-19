@@ -11,14 +11,19 @@ namespace ExceptionTracker.Logger.Adapter.NLog
     [ThreadAgnostic]
     public sealed class MongoDBLayoutField
     {
-        public MongoDBLayoutField(string name, Layout layout, string bsonType)
+        public MongoDBLayoutField() 
+            : this(null, null, "String")
+        {
+        }
+
+        private MongoDBLayoutField(string name, Layout layout, string bsonType)
         {
             Name = name;
             Layout = layout;
             BsonType = bsonType;
         }
 
-        public MongoDBLayoutField(string name, Layout layout) : this(name, layout, "String")
+        private MongoDBLayoutField(string name, Layout layout) : this(name, layout, "String")
         {
 
         }

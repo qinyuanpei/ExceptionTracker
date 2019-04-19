@@ -36,7 +36,7 @@ namespace ExceptionTracker.Tests
             }
             catch (Exception ex)
             {
-                logger.Error("指定的文件不存在");
+                logger.Info("指定的文件不存在",ex);
             }
         }
     }
