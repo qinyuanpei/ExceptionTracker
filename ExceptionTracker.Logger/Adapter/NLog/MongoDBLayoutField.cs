@@ -14,6 +14,7 @@ namespace ExceptionTracker.Logger.Adapter.NLog
         public MongoDBLayoutField() 
             : this(null, null, "String")
         {
+
         }
 
         private MongoDBLayoutField(string name, Layout layout, string bsonType)

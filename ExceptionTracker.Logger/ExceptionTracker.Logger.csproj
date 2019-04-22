@@ -8,12 +8,10 @@
 
   <ItemGroup>
     <Compile Include="Adapter\IMongoDBAdapter.cs" />
-    <Compile Include="Adapter\Log4Net\Log4NetExtend.cs" />
-    <Compile Include="Adapter\Log4Net\MongoDBAppender.cs" />
+    <Compile Include="Adapter\Log4Net\Log4NetMongoAdapter.cs" />
     <Compile Include="Adapter\Log4Net\MongoDBAppenderField.cs" />
     <Compile Include="Adapter\NLog\MongoDBLayoutField.cs" />
     <Compile Include="Adapter\NLog\NLogMongoAdapter.cs" />
-    <Compile Include="Adapter\NLog\BsonValueConverter.cs" />
     <Compile Include="DefaultLogAdapter.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="LoggerClient.cs" />
