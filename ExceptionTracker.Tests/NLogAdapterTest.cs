@@ -7,7 +7,7 @@ using System.IO;
 
 namespace ExceptionTracker.Tests
 {
-    public class NLogAdapterTest
+    public class NLogAdapterTest : ILoggerAdapterTester
     {
         private readonly ILogger logger;
 
@@ -18,17 +18,33 @@ namespace ExceptionTracker.Tests
 
 
         [Fact]
-        public void Test_SimpleData()
+        public void Test_TextMessage()
         {
             logger.Info("这是一条Info级别的日志");
             logger.Warn("这是一条Warn级别的日志");
             logger.Debug("这是一条Debug级别的日志");
-            logger.Error("这是一条Error级别的日志");
             logger.Fatal("这是一条Fatal级别的日志");
         }
 
         [Fact]
-        public void Test_LogException()
+        public void Test_MessageObject()
+        {
+            logger.Info(new { Text = "这是一条Info级别的日志", CreateBy = "Payne" });
+            logger.Warn(new { Text = "这是一条Warn级别的日志", CreateBy = "Payne" });
+            logger.Debug(new { Text = "这是一条Debug级别的日志", CreateBy = "Payne" });
+            logger.Fatal(new { Text = "这是一条Fatal级别的日志", CreateBy = "Payne" });
+        }
+
+        [Fact]
+        public void Test_Structuredlog()
+        {
+            var args = new object[] { "Payne", "想你时你在天边" };
+            var format = "这是一条由{0}创建的Info级别的日志，内容为：{1}";
+            logger.Info(format, args);
+        }
+
+        [Fact]
+        public void Test_ExceptionLog()
         {
             try
             {
@@ -36,8 +52,14 @@ namespace ExceptionTracker.Tests
             }
             catch (Exception ex)
             {
-                logger.Info(ex, "指定的文件不存在");
+                logger.Error(ex, "指定的文件不存在");
             }
+        }
+
+        [Fact]
+        public void Test_CustomFields()
+        {
+
         }
     }
 }

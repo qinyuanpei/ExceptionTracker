@@ -9,6 +9,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using log4net.Util;
+using log4net.Layout;
 
 namespace ExceptionTracker.Logger.Adapter.Log4Net
 {
@@ -99,6 +100,18 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
                 }
             }
 
+            //自定义字段
+            if (IncloudCustomFields && CustomFields.Any())
+            {
+                foreach (var field in CustomFields)
+                {
+                    var bsonValue = GetBsonValueWithField(loggingEvent, field);
+                    if (bsonValue == null)
+                        continue;
+                    document.Add(field.Name, bsonValue);
+                }
+            }
+
             //事件属性
             if (IncloudEventProperties && loggingEvent.Properties != null)
             {
@@ -110,19 +123,6 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
                         continue;
 
                     document.Add(propertyKey, propertyValue);
-                }
-            }
-
-            //自定义字段
-            if (IncloudCustomFields && CustomFields.Any())
-            {
-                foreach (var layoutField in CustomFields)
-                {
-                    BsonValue bsonValue;
-                    object fieldValue = layoutField.Layout.Format(loggingEvent);
-                    if (!BsonTypeMapper.TryMapToBsonValue(fieldValue, out bsonValue))
-                        bsonValue = fieldValue.ToBsonDocument();
-                    document.Add(layoutField.Name, bsonValue);
                 }
             }
 
@@ -140,31 +140,31 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
             return document;
         }
 
-        //private BsonValue GetBsonValueWithLayout(LoggingEvent logEvent, string layoutText)
-        //{
-        //    var layout = NEW(layoutText);
-        //    var value = RenderLogEvent(layout, logEvent);
-        //    if (string.IsNullOrEmpty(value))
-        //        return null;
-        //    BsonValue bsonValue;
-        //    if (!BsonTypeMapper.TryMapToBsonValue(value, out bsonValue))
-        //        bsonValue = bsonValue.ToBsonDocument();
-        //    return bsonValue;
-        //}
+        private BsonValue GetBsonValueWithLayout(LoggingEvent logEvent, string layoutText)
+        {
+            var layout = new PatternLayout(layoutText);
+            var value = layout.Format(logEvent);
+            if (string.IsNullOrEmpty(value))
+                return null;
+            BsonValue bsonValue;
+            if (!BsonTypeMapper.TryMapToBsonValue(value, out bsonValue))
+                bsonValue = bsonValue.ToBsonDocument();
+            return bsonValue;
+        }
 
-        //private BsonValue GetBsonValueWithField(LoggingEvent logEvent, MongoDBAppenderField field)
-        //{
-        //    var type = field.BsonType;
-        //    var layout = field.Layout;
-        //    if (layout == null)
-        //        return null;
-        //    var value = layout.Format(logEvent).ToString();
-        //    if (string.IsNullOrEmpty(value))
-        //        return null;
-        //    BsonValue bsonValue;
-        //    if (!BsonTypeMapper.TryMapToBsonValue(value, out bsonValue))
-        //        bsonValue = bsonValue.ToBsonDocument();
-        //    return bsonValue;
-        //}
+        private BsonValue GetBsonValueWithField(LoggingEvent logEvent, MongoDBAppenderField field)
+        {
+            var type = field.BsonType;
+            var layout = field.Layout;
+            if (layout == null)
+                return null;
+            var value = layout.Format(logEvent).ToString();
+            if (string.IsNullOrEmpty(value))
+                return null;
+            BsonValue bsonValue;
+            if (!BsonTypeMapper.TryMapToBsonValue(value, out bsonValue))
+                bsonValue = bsonValue.ToBsonDocument();
+            return bsonValue;
+        }
     }
 }

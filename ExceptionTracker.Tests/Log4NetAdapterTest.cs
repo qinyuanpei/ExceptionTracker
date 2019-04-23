@@ -3,19 +3,20 @@ using log4net.Config;
 using log4net.Repository;
 using System;
 using System.IO;
+using System.Reflection.PortableExecutable;
 using Xunit;
 
 namespace ExceptionTracker.Tests
 {
-    public class Log4NetLoggerTest
+    public class Log4NetAdapterTest:ILoggerAdapterTester
     {
         private readonly ILog logger;
 
-        public Log4NetLoggerTest()
+        public Log4NetAdapterTest()
         {
             ILoggerRepository repository = LogManager.CreateRepository("EtlogRepository");
             XmlConfigurator.Configure(repository, new FileInfo("log4net.config"));
-            logger = LogManager.GetLogger(repository.Name, typeof(Log4NetLoggerTest));
+            logger = LogManager.GetLogger(repository.Name, typeof(Log4NetAdapterTest));
         }
 
         [Fact]
@@ -57,5 +58,10 @@ namespace ExceptionTracker.Tests
             }
         }
 
+        [Fact]
+        public void Test_CustomFields()
+        {
+
+        }
     }
 }
