@@ -39,6 +39,21 @@ namespace ExceptionTracker.Logger.Adapter
         string IgnoredEventProperties { get; set; }
 
         /// <summary>
+        /// 是否为封闭集合
+        /// </summary>
+        bool IsCappedCollection { get; set; } 
+
+        /// <summary>
+        /// 集合大小
+        /// </summary>
+        long? CappedCollectionSize { get; set; }
+        
+        /// <summary>
+        /// 文档数目
+        /// </summary>
+        long? CappedCollectionMaxItems { get; set; }
+
+        /// <summary>
         /// 返回当前数据库
         /// </summary>
         /// <returns></returns>
@@ -51,5 +66,18 @@ namespace ExceptionTracker.Logger.Adapter
         /// <param name="logEvent">日志事件</param>
         /// <returns></returns>
         BsonDocument CreateBsonDocument(TLogEvent logEvent);
+
+        /// <summary>
+        /// 确保集合存在
+        /// </summary>
+        /// <param name="collectionName">集合名称</param>
+        void EnsureCollectionExists(string collectionName);
+
+        /// <summary>
+        /// 判断集合是否存在
+        /// </summary>
+        /// <param name="collectionName"></param>
+        /// <returns></returns>
+        bool IsCollectionExists(string collectionName);
     }
 }

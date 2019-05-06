@@ -7,7 +7,7 @@ using System.IO;
 
 namespace ExceptionTracker.Tests
 {
-    public class NLogAdapterTest : ILoggerAdapterTester
+    public class NLogAdapterTest : ILoggerAdapterTest
     {
         private readonly ILogger logger;
 

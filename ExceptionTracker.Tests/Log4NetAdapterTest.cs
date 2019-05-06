@@ -8,7 +8,7 @@ using Xunit;
 
 namespace ExceptionTracker.Tests
 {
-    public class Log4NetAdapterTest:ILoggerAdapterTester
+    public class Log4NetAdapterTest:ILoggerAdapterTest
     {
         private readonly ILog logger;
 

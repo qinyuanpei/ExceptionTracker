@@ -45,6 +45,11 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
         /// 可忽略的事件属性
         /// </summary>
         public string IgnoredEventProperties { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool IsCappedCollection { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public long? CappedCollectionSize { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public long? CappedCollectionMaxItems { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        long? IMongoDBAdapter<LoggingEvent>.CappedCollectionSize { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        long? IMongoDBAdapter<LoggingEvent>.CappedCollectionMaxItems { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         /// <summary>
         /// 自定义字段
@@ -165,6 +170,33 @@ namespace ExceptionTracker.Logger.Adapter.Log4Net
             if (!BsonTypeMapper.TryMapToBsonValue(value, out bsonValue))
                 bsonValue = bsonValue.ToBsonDocument();
             return bsonValue;
+        }
+
+        public void EnsureCollectionExists(string collectionName)
+        {
+            var database = GetDatabase();
+            if (IsCollectionExists(collectionName))
+                return;
+
+            var options = new CreateCollectionOptions
+            {
+                Capped = IsCappedCollection,
+                MaxSize = CappedCollectionSize,
+                MaxDocuments = CappedCollectionMaxItems
+            };
+
+            database.CreateCollection(collectionName, options);
+        }
+
+        public bool IsCollectionExists(string collectionName)
+        {
+            var database = GetDatabase();
+            var listOptions = new ListCollectionsOptions
+            {
+                Filter = Builders<BsonDocument>.Filter.Eq("name", collectionName)
+            };
+
+            return database.ListCollections(listOptions).ToEnumerable().Any();
         }
     }
 }

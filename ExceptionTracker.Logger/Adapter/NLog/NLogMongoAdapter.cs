@@ -53,6 +53,21 @@ namespace ExceptionTracker.Logger.Adapter.NLog
         public IList<MongoDBLayoutField> CustomFields { get; private set; } = new List<MongoDBLayoutField>();
 
         /// <summary>
+        /// 是否为封闭集合
+        /// </summary>
+        public bool IsCappedCollection { get; set; }
+
+        /// <summary>
+        /// 集合大小
+        /// </summary>
+        public long? CappedCollectionSize { get; set; }
+
+        /// <summary>
+        /// 文档数目
+        /// </summary>
+        public long? CappedCollectionMaxItems { get; set; }
+
+        /// <summary>
         /// 返回当前数据库
         /// </summary>
         /// <returns></returns>
@@ -68,6 +83,7 @@ namespace ExceptionTracker.Logger.Adapter.NLog
         protected override void Write(IList<AsyncLogEventInfo> logEvents)
         {
             var documents = logEvents.Select(logEvent => CreateBsonDocument(logEvent.LogEvent));
+            EnsureCollectionExists(CollectionName);
             var collection = GetDatabase().GetCollection<BsonDocument>(CollectionName);
             collection.InsertMany(documents);
         }
@@ -75,6 +91,7 @@ namespace ExceptionTracker.Logger.Adapter.NLog
         protected override void Write(AsyncLogEventInfo logEvent)
         {
             var document = CreateBsonDocument(logEvent.LogEvent);
+            EnsureCollectionExists(CollectionName);
             var collection = GetDatabase().GetCollection<BsonDocument>(CollectionName);
             collection.InsertOne(document);
         }
@@ -82,6 +99,7 @@ namespace ExceptionTracker.Logger.Adapter.NLog
         protected override void Write(LogEventInfo logEvent)
         {
             var document = CreateBsonDocument(logEvent);
+            EnsureCollectionExists(CollectionName);
             var collection = GetDatabase().GetCollection<BsonDocument>(CollectionName);
             collection.InsertOne(document);
         }
@@ -165,6 +183,33 @@ namespace ExceptionTracker.Logger.Adapter.NLog
             if (!BsonTypeMapper.TryMapToBsonValue(value, out bsonValue))
                 bsonValue = bsonValue.ToBsonDocument();
             return bsonValue;
+        }
+
+        public void EnsureCollectionExists(string collectionName)
+        {
+            var database = GetDatabase();
+            if (IsCollectionExists(collectionName))
+                return;
+
+            var options = new CreateCollectionOptions
+            {
+                Capped = IsCappedCollection,
+                MaxSize = CappedCollectionSize,
+                MaxDocuments = CappedCollectionMaxItems
+            };
+
+            database.CreateCollection(collectionName, options);
+        }
+
+        public bool IsCollectionExists(string collectionName)
+        {
+            var database = GetDatabase();
+            var listOptions = new ListCollectionsOptions
+            {
+                Filter = Builders<BsonDocument>.Filter.Eq("name", collectionName)
+            };
+
+            return database.ListCollections(listOptions).ToEnumerable().Any();
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ExceptionTracker.Tests
 {
-    public interface ILoggerAdapterTester
+    public interface ILoggerAdapterTest
     {
         void Test_TextMessage();
 
